@@ -8,17 +8,31 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from 'src/entities/users.entity';
 import { JwtStrategy } from './strategies/jwt-strategy';
 import { RefreshJwtStrategy } from './strategies/refreshToken.strategy';
+import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
+import { redisStore } from 'cache-manager-redis-yet';
+import { APP_INTERCEPTOR } from '@nestjs/core'
 
 @Module({
   providers: [
+    {
+      provide: APP_INTERCEPTOR,
+    useClass: CacheInterceptor,
+  },
+    UsersService,
     AuthService,  
     LocalStrategy,
     JwtStrategy,
     RefreshJwtStrategy,
-    UsersService,
   ],
   controllers: [AuthController],
   imports: [
+    CacheModule.register({
+      isGlobal: true,
+      store: redisStore,
+      host: '127.0.0.1',
+      port: 6379,
+      ttl: 36000,
+    }),
     TypeOrmModule.forFeature([Users]),
     JwtModule.register({
       secret: `${process.env.jwt_secret}`,

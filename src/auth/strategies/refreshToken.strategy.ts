@@ -10,12 +10,10 @@ export class RefreshJwtStrategy extends PassportStrategy(
       jwtFromRequest: ExtractJwt.fromBodyField('refresh'),
       ignoreExpiration: false,
       secretOrKey: `${process.env.jwt_secret}`,
-      });
+    });
   }
 
-  async validate(payload: { sub: string; username: string; id: string; refreshToken: string }): 
-  Promise<{ user: string; username: string; id: string; refreshToken: string }> 
-  {
-    return { user: payload.sub, username: payload.username, id: payload.id, refreshToken: payload.refreshToken };
+  async validate(payload: any) {
+    return { user: payload.sub, username: payload.username };
   }
 }

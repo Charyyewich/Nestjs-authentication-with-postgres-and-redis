@@ -1,24 +1,24 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { Module, UseInterceptors } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from './entities/users.entity';
-import { CACHE_MANAGER, CacheModule } from '@nestjs/cache-manager';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { CacheModule } from '@nestjs/cache-manager';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { CacheInterceptor } from '@nestjs/cache-manager';
-import { StudentsModule } from './students/students.module';
-import { StudentsService } from './students/students.service';
 import { redisStore } from 'cache-manager-redis-yet';
+import { UsersModule } from './users/users.module';
+//import { AuthGuard } from './auth/guard/jwt-auth.local';
+// import { BookService } from './book/book.service';
+// import { BookModule } from './book/book.module';
 
 @Module({
   imports: [
-    CacheModule.register({
+    CacheModule.registerAsync({
+      useFactory: () => ({
       isGlobal: true,
-      ttl: 30 * 1000, 
       store: redisStore,
-    }),
+      ttl: 1000000,
+    })    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
     host: '192.168.113.12',
@@ -28,9 +28,16 @@ import { redisStore } from 'cache-manager-redis-yet';
     database: 'new',
     entities: [Users],
     synchronize: true,}),
-    StudentsModule,
- AuthModule, UsersModule],
-  controllers: [AppController, ],
-  providers: [AppService, StudentsService],
+    AuthModule, UsersModule],
+  controllers: [],
+  providers: [
+    {provide: APP_INTERCEPTOR,
+    useClass: CacheInterceptor,
+    },
+  //   {
+  //     provide: APP_GUARD,
+  //     useClass: AuthGuard,
+  // },
+],
 })
 export class AppModule {}

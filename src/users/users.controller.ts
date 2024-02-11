@@ -2,8 +2,9 @@ import {
     Body,
     Controller,
     Post,
+    Get,
+    Patch,
   } from '@nestjs/common';
-  import { CreateUserDto} from './dto/createUser.dto';
   import { UsersService } from './users.service';
   
   @Controller('user')
@@ -11,10 +12,46 @@ import {
     constructor(
       private readonly userService: UsersService,
     ) {}
-  
-    @Post('register')
-    create(@Body() createUserDto: CreateUserDto) {
-      return this.userService.create(createUserDto);
+
+
+    @Get('loans/current')
+    async getCur() {
+      return 'current';
     }
-  }
-  
+
+    @Get('loans/previous')
+    async getPrev() {
+      return 'previous';
+    }
+
+    @Get('dashboard')
+    async getDash() {
+      return 'dashboard';
+    }
+
+    @Get('activities')
+    async getAct() {
+      return 'activities';
+    }
+
+    @Get('books')
+    async getBook() {
+      return 'books';
+    }
+
+    @Get('rules')
+    async getRules() {
+      return 'rules';
+    }
+
+    @Get('profile')
+    async getProf() {
+      return 'profile';
+    }
+
+    @Patch('profile')
+    async patchProf() {
+      return 'profile';
+    }
+    
+}

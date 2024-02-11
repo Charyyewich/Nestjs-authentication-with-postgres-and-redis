@@ -1,29 +1,31 @@
-import { Body, Controller, Post, HttpCode, HttpStatus, UseGuards, Request, UseInterceptors, Get } from '@nestjs/common';
+import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { CreateUserDto, UserLoginDto } from 'src/users/dto/createUser.dto';
+import { UsersService } from 'src/users/users.service';
 import { AuthService } from './auth.service';
-import { RefreshJwtGuard } from './guard/refresh-jwt-auth.guard';
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { RefreshJwtStrategy } from './strategies/refreshToken.strategy';
+import { RefreshDto } from './dto/Refresh.dto';
+import { SkipAuth } from './decorators/skip-auth';
 
-@UseInterceptors(CacheInterceptor)
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private userService: UsersService,
+  ) {}
 
-  @HttpCode(HttpStatus.OK)
-  @Post('login')
-  signIn(@Body() signInDto: Record<string, any>) {
-    return this.authService.signIn(signInDto.id, signInDto.email, signInDto.password);
+  @Post('student-signin')
+  async registerUser(@Body() createUserDto: CreateUserDto) {
+    return await this.userService.create(createUserDto);
   }
 
-  @UseGuards(RefreshJwtGuard)
+  @Post('student-login')
+  async login(@Body() dto:UserLoginDto) {
+    return await this.authService.login(dto);
+  }
+
+  @UseGuards(RefreshJwtStrategy)
   @Post('refresh')
-  async refrshToken(@Request() req) {
-    const { id } = req.user;
-    return this.authService.refreshToken(id);
-  }
-
-  @CacheTTL(60 * 1000)
-  @Get()
-  async getUsers() {
-    return this.authService.retrieveUsersFromDb();
+  async refreshToken(@Request() req, @Body() dto:RefreshDto) {
+    return this.authService.refreshToken(dto);
   }
 }
