@@ -31,7 +31,7 @@ export class AuthService {
   }
 
   async login(dto: UserLoginDto) {
-    const { email, password } = dto;
+    const { email, password, role } = dto;
 
     const user = await this.usersService.findOneWithUserName(email);
 
@@ -47,6 +47,7 @@ export class AuthService {
     const payload = {
       id: user.id,
       email: user.email,
+      role: user.role,
     };
     const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });

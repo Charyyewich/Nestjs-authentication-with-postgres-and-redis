@@ -2,9 +2,13 @@ import {
   BeforeInsert,
   Column,
   Entity,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { Roles } from './roles.entity';
+import { Role } from 'src/users/roles/roles.enum';
 @Entity()
 export class Users {
   @PrimaryGeneratedColumn()
@@ -24,6 +28,17 @@ export class Users {
 
   @Column({ nullable: true })
   refreshToken: string;
+
+  @Column({ type: 'enum', enum: Role, default: Role.User })
+  role: string
+
+  // @JoinTable()
+  // @ManyToMany(
+  //   type => Roles,
+  //   role => role.roles,
+  // )
+  // roles: string[];
+  
 
   @BeforeInsert()
   async hashPassword() {
