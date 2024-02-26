@@ -11,6 +11,7 @@ import { RefreshJwtStrategy } from './strategies/refreshToken.strategy';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
 import { APP_INTERCEPTOR } from '@nestjs/core'
+import { Message } from 'src/entities/message.entity';
 
 @Module({
   providers: [
@@ -33,7 +34,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core'
       port: 6379,
       ttl: 36000,
     }),
-    TypeOrmModule.forFeature([Users]),
+    TypeOrmModule.forFeature([Users, Message]),
     JwtModule.register({
       secret: `${process.env.jwt_secret}`,
       signOptions: { expiresIn: '60s' },

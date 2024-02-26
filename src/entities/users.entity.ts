@@ -32,13 +32,8 @@ export class Users {
   @Column({ type: 'enum', enum: Role, default: Role.User })
   role: string
 
-  // @JoinTable()
-  // @ManyToMany(
-  //   type => Roles,
-  //   role => role.roles,
-  // )
-  // roles: string[];
-  
+  @Column('simple-array', { nullable: true })
+  favorites: string[];
 
   @BeforeInsert()
   async hashPassword() {

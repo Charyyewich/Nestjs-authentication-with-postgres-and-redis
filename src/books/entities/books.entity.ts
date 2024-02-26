@@ -7,4 +7,10 @@ export class Book {
 
   @Column()
   name: string;
+
+  @Column({ default: 0 })
+    rating: number;
+
+  @Column('text', { array: true, default: [] })
+    report: string[];
 }

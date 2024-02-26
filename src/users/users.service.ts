@@ -10,7 +10,6 @@ export class UsersService {
   constructor(
     @InjectRepository(Users)
     private readonly userRepo: Repository<Users>,
-    // private readonly activityRepo: Repository<Activities>,
 ) {}
   
   findAall() {
@@ -24,10 +23,6 @@ export class UsersService {
   async findOneWithUserName(email: string) {
     return await this.userRepo.findOne({ where: { email: email } });
   }
-
-  // findAaall() {
-  //   return this.activityRepo.find()
-  //  }
 
   async findOne(id: string) {
     const book = await this.userRepo.findOne({ where: { id: parseInt(id) }})
@@ -48,12 +43,10 @@ export class UsersService {
     return this.userRepo.count();
   }
 
-  // async update(dto: UpdateUserDto) {
-  //    const student = await this.userRepo.preload({
-  //     ...dto
-  //    })
-  //    return this.userRepo.save(student)
-  // }
+  async getUserFavorites(userId: number): Promise<string[]> {
+    const user = await this.userRepo.findOneOrFail({ where: { id: userId }});
+    return user.favorites || [];
+  }
 }
 
  
